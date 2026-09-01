@@ -1,0 +1,7 @@
+node_modules/
+.env
+.env.*
+*.db
+*.log
+dist/
+Senhas redes sociais.txt
