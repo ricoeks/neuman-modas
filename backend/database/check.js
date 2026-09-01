@@ -1397,7 +1397,63 @@ if (avaliacoesProdutos.length === 0) {
 }
 
 // ======================================================
-// 34. RESUMO
+// 34. PERGUNTAS SOBRE PRODUTOS
+// ======================================================
+
+const perguntasProdutos = db
+  .prepare(`
+    SELECT
+      pq.id,
+
+      pq.product_id,
+      p.name AS product_name,
+
+      pq.variant_id,
+      pv.sku AS variant_sku,
+
+      pq.customer_id,
+      c.first_name,
+      c.last_name,
+
+      pq.question,
+      pq.customer_name,
+      pq.customer_email,
+
+      pq.status,
+      pq.answer,
+      pq.answered_by,
+      pq.answered_at,
+
+      pq.created_at,
+      pq.updated_at
+
+    FROM product_questions pq
+
+    INNER JOIN products p
+      ON p.id = pq.product_id
+
+    LEFT JOIN product_variants pv
+      ON pv.id = pq.variant_id
+
+    LEFT JOIN customers c
+      ON c.id = pq.customer_id
+
+    ORDER BY
+      pq.created_at DESC,
+      pq.id DESC
+  `)
+  .all();
+
+console.log("\nPerguntas sobre produtos:");
+
+if (perguntasProdutos.length === 0) {
+  console.log("Nenhuma pergunta sobre produto cadastrada.");
+} else {
+  console.table(perguntasProdutos);
+}
+
+// ======================================================
+// 35. RESUMO
 // ======================================================
 
 console.log("\nResumo do banco Neumam:");
