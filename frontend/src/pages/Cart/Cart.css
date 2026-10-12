@@ -1,0 +1,134 @@
+.carrinho > h1 {
+  margin: 24px 0;
+}
+
+.carrinho__mensagem,
+.carrinho__erro {
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.carrinho__erro {
+  color: #a12622;
+}
+
+.carrinho__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 24px;
+  align-items: start;
+}
+
+.carrinho__itens {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.carrinho__item,
+.carrinho__resumo {
+  padding: 24px;
+  border: 1px solid #e5dfd4;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.carrinho__item h2,
+.carrinho__resumo h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+.carrinho__item p {
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.carrinho__quantidade {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.carrinho__quantidade button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #d8cbb9;
+  border-radius: 8px;
+  background: #f6f4f0;
+  color: #171717;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.carrinho__numero {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.carrinho__valor-item {
+  font-weight: 700;
+}
+
+.carrinho__remover {
+  min-height: 44px;
+  margin-top: 20px;
+  padding: 10px 16px;
+  border: 1px solid #d8cbb9;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #842722;
+  cursor: pointer;
+}
+
+.carrinho__quantidade button:hover:not(:disabled),
+.carrinho__remover:hover:not(:disabled) {
+  background: #eee8de;
+}
+
+.carrinho button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carrinho button:focus-visible {
+  outline: 3px solid #b99157;
+  outline-offset: 3px;
+}
+
+.carrinho__resumo dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.carrinho__resumo dd {
+  margin: 0;
+  text-align: right;
+}
+
+.carrinho__total {
+  padding-top: 16px;
+  border-top: 1px solid #e5dfd4;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.carrinho__resumo > p {
+  margin-top: 20px;
+  color: #555555;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .carrinho__layout {
+    grid-template-columns: 1fr;
+  }
+}

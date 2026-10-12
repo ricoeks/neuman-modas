@@ -5,3 +5,14 @@ node_modules/
 *.log
 dist/
 Senhas redes sociais.txt
+
+# Arquivos auxiliares do SQLite
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
