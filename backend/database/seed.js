@@ -241,9 +241,9 @@ db.prepare(`
 const inserirPrecoVariante = db.prepare(`
   INSERT INTO variant_pricing (
     variant_id,
-    cost_price,
-    sale_price,
-    promotional_price,
+    cost_price_cents,
+   sale_price_cents,
+    promotional_price_cents,
     currency,
     status,
     valid_from,
@@ -255,8 +255,8 @@ const inserirPrecoVariante = db.prepare(`
 for (const variante of variantesBlazerPremium) {
   inserirPrecoVariante.run(
     variante.id,
-    149.90,
-    299.90,
+    14990,
+    29990,
     null,
     "BRL",
     "active",
@@ -281,11 +281,11 @@ db.prepare(`
 const inserirComercialVariante = db.prepare(`
   INSERT INTO variant_commercial (
     variant_id,
-    minimum_price,
+   minimum_price_cents,
     target_margin_percent,
     target_markup_percent,
     commission_percent,
-    operational_cost,
+    operational_cost_cents,
     tax_percent,
     status
   )
@@ -295,11 +295,11 @@ const inserirComercialVariante = db.prepare(`
 for (const variante of variantesBlazerPremium) {
   inserirComercialVariante.run(
     variante.id,
-    249.90,
+    24990,
     40,
     100,
     5,
-    20.00,
+    2000,
     8,
     "active"
   );
@@ -440,7 +440,7 @@ const inserirFornecedorVariante = db.prepare(`
     supplier_id,
     variant_id,
     supplier_sku,
-    supplier_cost,
+    supplier_cost_cents,
     available_quantity,
     availability_status,
     lead_time_days,
@@ -456,7 +456,7 @@ for (const variante of variantesBlazerPremium) {
     fornecedorPiloto.id,
     variante.id,
     `FORN-001-${variante.sku}`,
-    149.90,
+    14990,
     10,
     "available",
     5,
