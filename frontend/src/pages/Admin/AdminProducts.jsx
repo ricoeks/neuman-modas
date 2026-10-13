@@ -330,7 +330,7 @@ function AdminProducts() {
                       {produtos.map((produto) => (
                         <tr key={produto.id}>
                           <td>
-                            <strong>{produto.name}</strong>
+                            <Link to={`/admin/produtos/${produto.id}/editar`}><strong>{produto.name}</strong></Link>
                             <p className="admin__produto-marca">{produto.brand}</p>
                           </td>
                           <td className="admin__produto-codigo">{produto.sku_base}</td>
