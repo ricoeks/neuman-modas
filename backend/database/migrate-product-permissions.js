@@ -1,4 +1,4 @@
-﻿const Database = require("better-sqlite3");
+const Database = require("better-sqlite3");
 const path = require("node:path");
 
 async function migrar() {
@@ -193,4 +193,3 @@ migrar().catch((erro) => {
   console.error("Migração não aplicada:", erro.message);
   process.exitCode = 1;
 });
-
