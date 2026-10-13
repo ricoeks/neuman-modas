@@ -34,6 +34,7 @@ function Cart() {
       try {
         const resposta = await fetch("/api/carts", {
           credentials: "same-origin",
+          cache: "no-store",
           signal: controller.signal,
         });
 
@@ -94,12 +95,8 @@ function Cart() {
       };
 
       if (metodo === "PATCH") {
-        opcoes.headers = {
-          "Content-Type": "application/json",
-        };
-        opcoes.body = JSON.stringify({
-          quantity: quantidade,
-        });
+        opcoes.headers = { "Content-Type": "application/json" };
+        opcoes.body = JSON.stringify({ quantity: quantidade });
       }
 
       const resposta = await fetch(
@@ -119,9 +116,7 @@ function Cart() {
 
       if (!controller.signal.aborted) {
         setCarrinho(recebido);
-        setMensagem(
-          dados.mensagem || "Carrinho atualizado."
-        );
+        setMensagem(dados.mensagem || "Carrinho atualizado.");
       }
     } catch (error) {
       if (!controller.signal.aborted) {
@@ -139,173 +134,245 @@ function Cart() {
   }
 
   const vazio = !carrinho || carrinho.itens.length === 0;
+  const quantidadeTotal =
+    carrinho?.itens.reduce((total, item) => total + item.quantity, 0) ?? 0;
 
   return (
-    <main className="catalogo carrinho">
-      <Link to="/">← Continuar comprando</Link>
+    <div className="carrinho-pagina">
+      <header className="carrinho__cabecalho">
+        <Link className="carrinho__marca" to="/" aria-label="Neumam Modas — início">
+          NEUMAM
+          <span>MODAS</span>
+        </Link>
 
-      <h1>Meu carrinho</h1>
+        <Link className="carrinho__voltar" to="/">
+          <span aria-hidden="true">←</span> Continuar comprando
+        </Link>
+      </header>
 
-      {carregando && <p role="status">Carregando carrinho...</p>}
-      {erro && <p role="alert">{erro}</p>}
+      <main className="carrinho">
+        <div className="carrinho__titulo">
+          <span className="carrinho__etiqueta">SUAS ESCOLHAS</span>
+          <h1>Meu carrinho</h1>
+          <p>Confira suas peças antes de enviar a solicitação.</p>
+        </div>
 
-      {atualizando && (
-        <p className="carrinho__mensagem" role="status">
-          Atualizando carrinho...
-        </p>
-      )}
+        {carregando && (
+          <p className="carrinho__aviso" role="status">
+            Carregando carrinho...
+          </p>
+        )}
 
-      {mensagem && (
-        <p className="carrinho__mensagem" role="status">
-          {mensagem}
-        </p>
-      )}
+        {erro && (
+          <p className="carrinho__erro" role="alert">
+            {erro}
+          </p>
+        )}
 
-      {erroAcao && (
-        <p className="carrinho__erro" role="alert">
-          {erroAcao}
-        </p>
-      )}
+        {atualizando && (
+          <p className="carrinho__mensagem" role="status">
+            Atualizando carrinho...
+          </p>
+        )}
 
-      {!carregando && !erro && vazio && (
-        <p>Seu carrinho está vazio.</p>
-      )}
+        {mensagem && (
+          <p className="carrinho__mensagem" role="status">
+            {mensagem}
+          </p>
+        )}
 
-      {!carregando && !erro && !vazio && (
-        <div
-          className="carrinho__layout"
-          aria-busy={atualizando}
-        >
-          <ul className="carrinho__itens">
-            {carrinho.itens.map((item) => (
-              <li className="carrinho__item" key={item.id}>
-                <h2>{item.product_name}</h2>
+        {erroAcao && (
+          <p className="carrinho__erro" role="alert">
+            {erroAcao}
+          </p>
+        )}
 
-                <p>
-                  {item.color_name || "Cor não informada"} —{" "}
-                  {item.size_name || "Tamanho não informado"}
-                </p>
+        {!carregando && !erro && vazio && (
+          <section className="carrinho__vazio">
+            <span className="carrinho__vazio-simbolo" aria-hidden="true">
+              NM
+            </span>
+            <h2>Seu próximo look começa aqui</h2>
+            <p>
+              Seu carrinho está vazio. Conheça o catálogo e escolha
+              uma peça para você.
+            </p>
+            <Link className="carrinho__botao" to="/">
+              Explorar produtos <span aria-hidden="true">↗</span>
+            </Link>
+          </section>
+        )}
 
-                <div className="carrinho__quantidade">
-                  <span>Quantidade:</span>
+        {!carregando && !erro && !vazio && (
+          <div className="carrinho__layout" aria-busy={atualizando}>
+            <section aria-labelledby="pecas-titulo">
+              <div className="carrinho__lista-titulo">
+                <h2 id="pecas-titulo">Suas peças</h2>
+                <span>
+                  {quantidadeTotal} {quantidadeTotal === 1 ? "unidade" : "unidades"}
+                </span>
+              </div>
 
-                  <button
-                    type="button"
-                    disabled={atualizando || item.quantity <= 1}
-                    aria-label={`Diminuir quantidade de ${item.product_name}, ${item.color_name}, ${item.size_name}`}
-                    onClick={() =>
-                      atualizarItem(
-                        item.id,
-                        "PATCH",
-                        item.quantity - 1
-                      )
-                    }
-                  >
-                    −
-                  </button>
+              <ul className="carrinho__itens">
+                {carrinho.itens.map((item) => {
+                  const opcao = `${
+                    item.color_name || "Cor não informada"
+                  }, ${item.size_name || "Tamanho não informado"}`;
 
-                  <span className="carrinho__numero">
-                    {item.quantity}
-                  </span>
+                  return (
+                    <li className="carrinho__item" key={item.id}>
+                      <div className="carrinho__item-topo">
+                        <div>
+                          <span className="carrinho__etiqueta">
+                            NEUMAM MODAS
+                          </span>
+                          <h3>{item.product_name}</h3>
+                          <p className="carrinho__variante">
+                            {item.color_name || "Cor não informada"} —{" "}
+                            {item.size_name || "Tamanho não informado"}
+                          </p>
+                        </div>
 
-                  <button
-                    type="button"
-                    disabled={atualizando || item.quantity >= 100}
-                    aria-label={`Aumentar quantidade de ${item.product_name}, ${item.color_name}, ${item.size_name}`}
-                    onClick={() =>
-                      atualizarItem(
-                        item.id,
-                        "PATCH",
-                        item.quantity + 1
-                      )
-                    }
-                  >
-                    +
-                  </button>
+                        <p className="carrinho__valor-item">
+                          <span>Total do item</span>
+                          <strong>
+                            {formatarPreco(item.line_total_cents, item.currency)}
+                          </strong>
+                        </p>
+                      </div>
+
+                      <p className="carrinho__unitario">
+                        Preço unitário:{" "}
+                        {formatarPreco(item.unit_price_cents, item.currency)}
+                      </p>
+
+                      <div className="carrinho__item-acoes">
+                        <div className="carrinho__quantidade">
+                          <span>Quantidade</span>
+
+                          <div className="carrinho__controle">
+                            <button
+                              type="button"
+                              disabled={atualizando || item.quantity <= 1}
+                              aria-label={`Diminuir quantidade de ${item.product_name}, ${opcao}`}
+                              onClick={() =>
+                                atualizarItem(item.id, "PATCH", item.quantity - 1)
+                              }
+                            >
+                              −
+                            </button>
+
+                            <span className="carrinho__numero">
+                              {item.quantity}
+                            </span>
+
+                            <button
+                              type="button"
+                              disabled={atualizando || item.quantity >= 100}
+                              aria-label={`Aumentar quantidade de ${item.product_name}, ${opcao}`}
+                              onClick={() =>
+                                atualizarItem(item.id, "PATCH", item.quantity + 1)
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="carrinho__remover"
+                          disabled={atualizando}
+                          aria-label={`Remover ${item.product_name}, ${opcao} do carrinho`}
+                          onClick={() => atualizarItem(item.id, "DELETE")}
+                        >
+                          Remover item
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+
+            <aside
+              className="carrinho__resumo"
+              aria-labelledby="resumo-titulo"
+            >
+              <span className="carrinho__etiqueta">PRÓXIMO PASSO</span>
+              <h2 id="resumo-titulo">Resumo do carrinho</h2>
+
+              <dl>
+                <div>
+                  <dt>Subtotal</dt>
+                  <dd>
+                    {formatarPreco(carrinho.subtotal_cents, carrinho.currency)}
+                  </dd>
                 </div>
 
-                <p>
-                  Preço unitário:{" "}
-                  {formatarPreco(
-                    item.unit_price_cents,
-                    item.currency
-                  )}
-                </p>
+                <div>
+                  <dt>Desconto</dt>
+                  <dd>
+                    {formatarPreco(
+                      carrinho.discount_total_cents,
+                      carrinho.currency
+                    )}
+                  </dd>
+                </div>
 
-                <p className="carrinho__valor-item">
-                  Total do item:{" "}
-                  {formatarPreco(
-                    item.line_total_cents,
-                    item.currency
-                  )}
-                </p>
+                <div>
+                  <dt>Frete</dt>
+                  <dd>
+                    {carrinho.shipping_total_cents > 0
+                      ? formatarPreco(
+                          carrinho.shipping_total_cents,
+                          carrinho.currency
+                        )
+                      : "Sob consulta"}
+                  </dd>
+                </div>
 
+                <div className="carrinho__total">
+                  <dt>Total atual</dt>
+                  <dd>
+                    {formatarPreco(carrinho.total_cents, carrinho.currency)}
+                  </dd>
+                </div>
+              </dl>
+
+              <p className="carrinho__frete-info">
+                {carrinho.shipping_total_cents > 0
+                  ? "O frete informado está incluído no total atual."
+                  : "O total atual não inclui o frete. A loja informa o valor da entrega antes do pagamento."}
+              </p>
+
+              {atualizando ? (
                 <button
+                  className="carrinho__botao"
                   type="button"
-                  className="carrinho__remover"
-                  disabled={atualizando}
-                  aria-label={`Remover ${item.product_name}, ${item.color_name}, ${item.size_name} do carrinho`}
-                  onClick={() =>
-                    atualizarItem(item.id, "DELETE")
-                  }
+                  disabled
                 >
-                  Remover item
+                  Atualizando carrinho...
                 </button>
-              </li>
-            ))}
-          </ul>
+              ) : (
+                <Link className="carrinho__botao" to="/finalizar">
+                  Continuar <span aria-hidden="true">→</span>
+                </Link>
+              )}
 
-          <aside
-            className="carrinho__resumo"
-            aria-labelledby="resumo-titulo"
-          >
-            <h2 id="resumo-titulo">Resumo do carrinho</h2>
-            <Link to="/finalizar">Continuar para contato e entrega</Link>
+              <p className="carrinho__proximo">
+                Na próxima etapa, informe seus dados de contato e entrega.
+              </p>
+            </aside>
+          </div>
+        )}
+      </main>
 
-            <dl>
-              <div>
-                <dt>Subtotal</dt>
-                <dd>
-                  {formatarPreco(
-                    carrinho.subtotal_cents,
-                    carrinho.currency
-                  )}
-                </dd>
-              </div>
-
-              <div>
-                <dt>Desconto</dt>
-                <dd>
-                  {formatarPreco(
-                    carrinho.discount_total_cents,
-                    carrinho.currency
-                  )}
-                </dd>
-              </div>
-
-              <div className="carrinho__total">
-                <dt>Total atual</dt>
-                <dd>
-                  {formatarPreco(
-                    carrinho.total_cents,
-                    carrinho.currency
-                  )}
-                </dd>
-              </div>
-            </dl>
-
-            <p>
-              {carrinho.shipping_total_cents > 0
-                ? `Frete incluído: ${formatarPreco(
-                    carrinho.shipping_total_cents,
-                    carrinho.currency
-                  )}.`
-                : "Frete ainda não calculado."}
-            </p>
-          </aside>
-        </div>
-      )}
-    </main>
+      <footer className="carrinho__rodape">
+        <span>Neumam Modas</span>
+        <p>Seu estilo, sua escolha.</p>
+      </footer>
+    </div>
   );
 }
 
