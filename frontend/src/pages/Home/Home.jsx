@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
-import "./Home.css";
 import { Link } from "react-router-dom";
+import "./Home.css";
 
-const formatarPreco = (centavos, moeda) =>
-  new Intl.NumberFormat("pt-BR", {
+function formatarPreco(centavos, moeda) {
+  if (!Number.isSafeInteger(centavos) || centavos < 0 || !moeda) {
+    return "Preço indisponível";
+  }
+
+  return `A partir de ${new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: moeda,
-  }).format(centavos / 100);
+  }).format(centavos / 100)}`;
+}
 
 function Home() {
   const [produtos, setProdutos] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
 
     async function carregarProdutos() {
+      setCarregando(true);
+      setErro("");
+
       try {
         const resposta = await fetch("/api/products?limit=12", {
           signal: controller.signal,
@@ -32,7 +41,9 @@ function Home() {
           throw new Error("A resposta do catálogo é inválida.");
         }
 
-        setProdutos(dados.produtos);
+        if (!controller.signal.aborted) {
+          setProdutos(dados.produtos);
+        }
       } catch (error) {
         if (!controller.signal.aborted) {
           setErro(error.message);
@@ -45,75 +56,256 @@ function Home() {
     }
 
     carregarProdutos();
-
     return () => controller.abort();
-  }, []);
+  }, [tentativa]);
+
+  const destaque = produtos.find((produto) => produto.image_url);
 
   return (
-    <main className="home">
-      <section className="hero">
-        <h1 className="hero__title">
-          Neumam <span>Modas</span>
-        </h1>
+    <div className="loja">
+      <a className="loja__pular" href="#conteudo">
+        Pular para o conteúdo
+      </a>
 
-        <p className="hero__slogan">Seu estilo, sua escolha.</p>
-      </section>
+      <div className="loja__aviso">
+        Seu estilo, sua escolha. Conheça Neumam Modas.
+      </div>
 
-      <section className="catalogo" aria-labelledby="catalogo-titulo">
-        <h2 id="catalogo-titulo">Conheça nossos produtos</h2>
+      <header className="loja__cabecalho">
+        <div className="loja__cabecalho-conteudo">
+          <Link className="loja__marca" to="/" aria-label="Neumam Modas — início">
+            NEUMAM
+            <span>MODAS</span>
+          </Link>
 
-        {carregando && <p role="status">Carregando produtos...</p>}
+          <nav className="loja__nav" aria-label="Navegação principal">
+            <a href="#catalogo">Produtos</a>
+            <a href="#como-comprar">Como comprar</a>
 
-        {erro && <p role="alert">{erro}</p>}
+            <Link className="loja__carrinho" to="/carrinho">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden="true"
+              >
+                <path d="M6 7h12l1 14H5L6 7Z" />
+                <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+              </svg>
+              Carrinho
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-        {!carregando && !erro && produtos.length === 0 && (
-          <p>Nenhum produto disponível no momento.</p>
-        )}
+      <main id="conteudo">
+        <section className="loja__hero" aria-labelledby="hero-titulo">
+          <div className="loja__hero-texto">
+            <span className="loja__etiqueta">NEUMAM MODAS</span>
 
-        {!carregando && !erro && (
-          <div className="catalogo__grid">
-            {produtos.map((produto) => (
-              <article className="produto-card" key={produto.id}>
-                {produto.image_url ? (
-                  <img
-                    className="produto-card__imagem"
-                    src={produto.image_url}
-                    alt={produto.image_alt_text || produto.name}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="produto-card__sem-imagem">
-                    Imagem em breve
-                  </div>
-                )}
+            <h1 id="hero-titulo">
+              Elegância para
+              <br />
+              acompanhar <em>você.</em>
+            </h1>
 
-                <div className="produto-card__conteudo">
-                  <h3>{produto.name}</h3>
-                  <p>{produto.short_description}</p>
+            <p>
+              Descubra peças para compor o seu estilo, do trabalho aos
+              momentos especiais.
+            </p>
 
-                  <p className="produto-card__preco">
-                    {produto.price_cents !== null &&
-                    produto.price_cents !== undefined &&
-                    produto.currency
-                      ? `A partir de ${formatarPreco(
-                          produto.price_cents,
-                          produto.currency
-                        )}`
-                      : "Preço indisponível"}
-                  </p>
-                  <Link
-  className="produto-card__link"
-  to={`/produtos/${encodeURIComponent(produto.slug)}`}
->
-  Ver produto
-</Link>
-                </div>
-              </article>
-            ))}
+            <a className="loja__botao" href="#catalogo">
+              Explorar produtos <span aria-hidden="true">↗</span>
+            </a>
+
+            <span className="loja__hero-assinatura">
+              Seu estilo, sua escolha.
+            </span>
           </div>
-        )}
-      </section>
-    </main>
+
+          <div className="loja__hero-visual">
+            {destaque ? (
+              <Link
+                className="loja__hero-imagem-link"
+                to={`/produtos/${encodeURIComponent(destaque.slug)}`}
+                aria-label={`Conhecer ${destaque.name}`}
+              >
+                <img
+                  className="loja__hero-imagem"
+                  src={destaque.image_url}
+                  alt={destaque.image_alt_text || destaque.name}
+                  fetchPriority="high"
+                />
+
+                <div className="loja__hero-legenda">
+                  <span>CONHEÇA A PEÇA</span>
+                  <strong>{destaque.name}</strong>
+                  <span aria-hidden="true">↗</span>
+                </div>
+              </Link>
+            ) : (
+              <div className="loja__hero-placeholder" aria-hidden="true">
+                <span>NM</span>
+                <p>Seu estilo, sua escolha.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section
+          className="loja__catalogo"
+          id="catalogo"
+          aria-labelledby="catalogo-titulo"
+          aria-busy={carregando}
+        >
+          <div className="loja__secao-cabecalho">
+            <div>
+              <span className="loja__etiqueta">ESCOLHAS PARA VOCÊ</span>
+              <h2 id="catalogo-titulo">Nosso catálogo</h2>
+            </div>
+
+            <p>Encontre sua próxima peça favorita.</p>
+          </div>
+
+          {carregando && (
+            <div className="loja__estado" role="status">
+              Carregando produtos...
+            </div>
+          )}
+
+          {erro && (
+            <div className="loja__estado">
+              <p role="alert">{erro}</p>
+              <button
+                className="loja__botao"
+                type="button"
+                onClick={() => setTentativa((valor) => valor + 1)}
+              >
+                Tentar novamente
+              </button>
+            </div>
+          )}
+
+          {!carregando && !erro && produtos.length === 0 && (
+            <div className="loja__estado">
+              Nenhum produto disponível no momento.
+            </div>
+          )}
+
+          {!carregando && !erro && produtos.length > 0 && (
+            <div className="loja__grid">
+              {produtos.map((produto) => (
+                <article className="loja__produto" key={produto.id}>
+                  <Link
+                    className="loja__produto-visual"
+                    to={`/produtos/${encodeURIComponent(produto.slug)}`}
+                    aria-label={`Ver ${produto.name}`}
+                  >
+                    {produto.image_url ? (
+                      <img
+                        src={produto.image_url}
+                        alt={produto.image_alt_text || produto.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="loja__sem-imagem">Imagem em breve</span>
+                    )}
+
+                    <span className="loja__produto-seta" aria-hidden="true">
+                      ↗
+                    </span>
+                  </Link>
+
+                  <div className="loja__produto-conteudo">
+                    <span className="loja__produto-marca">
+                      {produto.brand || "Neumam Modas"}
+                    </span>
+
+                    <h3>
+                      <Link
+                        to={`/produtos/${encodeURIComponent(produto.slug)}`}
+                      >
+                        {produto.name}
+                      </Link>
+                    </h3>
+
+                    {produto.short_description && (
+                      <p className="loja__produto-descricao">
+                        {produto.short_description}
+                      </p>
+                    )}
+
+                    <p className="loja__produto-preco">
+                      {formatarPreco(produto.price_cents, produto.currency)}
+                    </p>
+
+                    <Link
+                      className="loja__produto-link"
+                      to={`/produtos/${encodeURIComponent(produto.slug)}`}
+                    >
+                      Ver cores e tamanhos <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section
+          className="loja__como"
+          id="como-comprar"
+          aria-labelledby="como-titulo"
+        >
+          <div className="loja__como-intro">
+            <span className="loja__etiqueta">DO SEU JEITO</span>
+            <h2 id="como-titulo">Como comprar</h2>
+            <p>Escolha suas peças e envie sua solicitação pela loja.</p>
+          </div>
+
+          <ol className="loja__passos">
+            <li>
+              <span className="loja__passo-numero" aria-hidden="true">01</span>
+              <h3>Escolha sua peça</h3>
+              <p>Confira os detalhes e selecione a cor e o tamanho.</p>
+            </li>
+            <li>
+              <span className="loja__passo-numero" aria-hidden="true">02</span>
+              <h3>Envie a solicitação</h3>
+              <p>Adicione ao carrinho e informe seus dados de entrega.</p>
+            </li>
+            <li>
+              <span className="loja__passo-numero" aria-hidden="true">03</span>
+              <h3>Receba o orçamento</h3>
+              <p>A loja informa o frete e o total antes do pagamento.</p>
+            </li>
+          </ol>
+        </section>
+      </main>
+
+      <footer className="loja__rodape">
+        <div>
+          <Link className="loja__marca" to="/">
+            NEUMAM
+            <span>MODAS</span>
+          </Link>
+          <p>Seu estilo, sua escolha.</p>
+        </div>
+
+        <nav aria-label="Navegação do rodapé">
+          <a href="#catalogo">Produtos</a>
+          <Link to="/carrinho">Carrinho</Link>
+          <Link to="/admin">Área administrativa</Link>
+        </nav>
+
+        <p className="loja__copyright">
+          © {new Date().getFullYear()} Neumam Modas
+        </p>
+      </footer>
+    </div>
   );
 }
 
