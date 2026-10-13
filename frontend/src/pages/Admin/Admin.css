@@ -246,3 +246,160 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Navegação administrativa e produtos */
+
+.admin__navegacao {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.admin__navegacao a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid #d8cbb9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #604723;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.admin__navegacao a:hover {
+  background: #eee8de;
+}
+
+.admin__navegacao a.active {
+  border-color: #171717;
+  background: #171717;
+  color: #ffffff;
+}
+
+.admin__produto-marca {
+  margin-top: 8px;
+  color: #656459;
+  font-size: 12px;
+}
+
+.admin__produto-codigo {
+  overflow-wrap: anywhere;
+}
+
+.admin__status {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #d8cbb9;
+  border-radius: 999px;
+  background: #f6f4f0;
+  color: #605d54;
+  font-size: 12px;
+}
+
+.admin__status--active {
+  border-color: #cbd7c5;
+  background: #f0f6eb;
+  color: #40553b;
+}
+
+.admin__status--blocked {
+  border-color: #dfc2bd;
+  background: #fff1ee;
+  color: #923b32;
+}
+
+@media (max-width: 600px) {
+  .admin__navegacao {
+    padding: 20px 16px 0;
+  }
+}
+
+/* Cadastro de produtos */
+
+.admin__cadastro-produto {
+  max-width: 900px;
+  padding: 28px;
+  border: 1px solid #e5dfd4;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.admin__cadastro-aviso {
+  margin-bottom: 24px;
+  color: #605d54;
+  line-height: 1.7;
+}
+
+.admin__cadastro-produto fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.admin__cadastro-produto legend {
+  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.admin__cadastro-campo {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin__cadastro-campo label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin__cadastro-campo p {
+  color: #656459;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.admin__cadastro-campo select,
+.admin__cadastro-campo textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid #b9b3a9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #171717;
+  font: inherit;
+}
+
+.admin__cadastro-campo input {
+  font-size: 16px;
+}
+
+.admin__cadastro-campo textarea {
+  resize: vertical;
+}
+
+.admin__cadastro-largo {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .admin__cadastro-produto {
+    padding: 20px;
+  }
+
+  .admin__cadastro-produto fieldset {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
