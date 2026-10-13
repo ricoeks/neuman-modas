@@ -16,3 +16,9 @@ Senhas redes sociais.txt
 *.sqlite-shm
 *.sqlite3-wal
 *.sqlite3-shm
+
+# Backups e arquivos temporarios locais
+/backups/
+*.bak-edicao
+/configurar-permissoes-produtos.cjs
+/neumam_edicao/
