@@ -2,7 +2,9 @@
 const path = require("node:path");
 
 async function migrar() {
-  const arquivo = path.join(__dirname, "neumam.db");
+  const arquivo = process.argv[2]
+    ? path.resolve(process.argv[2])
+    : path.join(__dirname, "neumam.db");
   const db = new Database(arquivo, { fileMustExist: true });
 
   try {
@@ -191,3 +193,4 @@ migrar().catch((erro) => {
   console.error("Migração não aplicada:", erro.message);
   process.exitCode = 1;
 });
+
