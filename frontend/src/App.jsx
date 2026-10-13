@@ -7,6 +7,7 @@ import Admin from "./pages/Admin/Admin";
 import AdminOrder from "./pages/Admin/AdminOrder";
 import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminProductCreate from "./pages/Admin/AdminProductCreate";
+import AdminProductEdit from "./pages/Admin/AdminProductEdit";
 
 function AreaAdmin({ children }) {
   return (
@@ -47,6 +48,10 @@ function App() {
         <Route
           path="/admin/produtos"
           element={<AreaAdmin><AdminProducts /></AreaAdmin>}
+        />
+        <Route
+          path="/admin/produtos/:id/editar"
+          element={<AreaAdmin><AdminProductEdit /></AreaAdmin>}
         />
         <Route
           path="/admin/produtos/novo"
