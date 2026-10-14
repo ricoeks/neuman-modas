@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import AdminProductVariants from "./AdminProductVariants";
 import "./Admin.css";
 
 const camposTexto = [
@@ -299,6 +300,9 @@ function AdminProductEdit() {
             </div>
           </fieldset>
         </form>
+      )}
+      {!carregando && formulario && !semSessao && !semPermissao && (
+        <AdminProductVariants productId={id} />
       )}
     </main>
   );
