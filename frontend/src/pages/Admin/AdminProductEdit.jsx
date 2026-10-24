@@ -221,7 +221,7 @@ function AdminProductEdit() {
       setFormulario(atualizado);
       setVersion(dados.version);
       setMensagem(dados.mensagem || "Produto atualizado com sucesso.");
-    } catch (e) {
+    } catch {
       if (!controller.signal.aborted) setErro("Não foi possível confirmar a gravação. Recarregue e confira os dados antes de tentar novamente.");
     } finally {
       if (envioAtual.current === controller) {
@@ -302,7 +302,7 @@ function AdminProductEdit() {
         </form>
       )}
       {!carregando && formulario && !semSessao && !semPermissao && (
-        <AdminProductVariants productId={id} />
+        <AdminProductVariants key={id} productId={id} skuBase={original.sku_base} />
       )}
     </main>
   );
