@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import AdminProductVariants from "./AdminProductVariants";
 import "./Admin.css";
 
 const camposTexto = [
@@ -220,7 +221,7 @@ function AdminProductEdit() {
       setFormulario(atualizado);
       setVersion(dados.version);
       setMensagem(dados.mensagem || "Produto atualizado com sucesso.");
-    } catch (e) {
+    } catch {
       if (!controller.signal.aborted) setErro("Não foi possível confirmar a gravação. Recarregue e confira os dados antes de tentar novamente.");
     } finally {
       if (envioAtual.current === controller) {
@@ -299,6 +300,9 @@ function AdminProductEdit() {
             </div>
           </fieldset>
         </form>
+      )}
+      {!carregando && formulario && !semSessao && !semPermissao && (
+        <AdminProductVariants key={id} productId={id} skuBase={original.sku_base} />
       )}
     </main>
   );
